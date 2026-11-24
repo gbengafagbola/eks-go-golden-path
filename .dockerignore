@@ -1,0 +1,15 @@
+.git
+.github
+.cursor
+docs
+experiments
+helm
+terraform
+scripts
+*.md
+.gitignore
+.DS_Store
+**/bin/
+**/*_test.go
+agent-transcripts
+agent-tools

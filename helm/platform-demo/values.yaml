@@ -1,0 +1,107 @@
+nameOverride: ""
+fullnameOverride: "platform-demo"
+
+namespace:
+  # Namespace is created by Terraform (kubernetes_namespace_v1.app) so the
+  # GitHub deploy role can stay namespace-scoped. Set create=true only for
+  # local cluster-admin bootstraps.
+  create: false
+  name: platform-demo
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+
+replicaCount: 2
+
+image:
+  repository: "" # set to ECR URL, e.g. 123456789012.dkr.ecr.us-east-1.amazonaws.com/platform-demo-demo/platform-demo
+  tag: ""        # immutable tag, e.g. sha-abcdef1
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  name: platform-demo
+  annotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+probes:
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    path: /readyz
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60
+
+networkPolicy:
+  enabled: true
+  # Ingress only from pods labeled access=allowed (same namespace).
+  # Egress HTTPS for AWS APIs (Pod Identity / S3). Required for identity demos.
+  allowAWSHTTPS: true
+
+env:
+  SERVICE_NAME: platform-demo
+  HTTP_ADDR: ":8080"
+  MAX_WORK_DURATION: "2s"
+  MAX_WORK_CPU_MILLIS: "500"
+  # Enable when CloudWatch Observability OTLP endpoint is reachable in-cluster
+  OTEL_ENABLE_OTLP_EXPORT: "false"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "cloudwatch-agent.amazon-cloudwatch.svc:4318"
+  OTEL_EXPORTER_OTLP_INSECURE: "true"
+  DEMO_BUCKET: "" # set from Terraform output demo_bucket_name
+  AWS_REGION: us-east-1
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+podAnnotations: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

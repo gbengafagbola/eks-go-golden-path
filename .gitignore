@@ -1,0 +1,36 @@
+# Binaries / local build
+bin/
+/tmp/
+*.exe
+*.test
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+!terraform/terraform.tfvars.example
+terraform/tfplan
+terraform/crash.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+credentials.json
+
+# Helm
+charts/*.tgz
+
+# Coverage
+coverage.out
+*.coverprofile
+
+# Local tooling
+.venv-img/

@@ -1,0 +1,45 @@
+aws_region         = "us-east-1"
+project_name       = "platform-demo"
+environment        = "demo"
+kubernetes_version = "1.35"
+
+# Verify before apply:
+#   aws eks describe-cluster-versions --region us-east-1 \
+#     --query 'clusterVersions[?clusterVersion==`1.35`]'
+
+vpc_cidr              = "10.42.0.0/16"
+single_nat_gateway    = true
+node_instance_types   = ["t3.medium"]
+node_desired_size     = 2
+node_min_size         = 2
+node_max_size         = 4
+
+network_policy_enforcing_mode = "standard"
+# For stricter demos (requires DNS NetworkPolicies for CoreDNS too):
+# network_policy_enforcing_mode = "strict"
+
+app_namespace       = "platform-demo"
+app_service_account = "platform-demo"
+
+# --- GitHub OIDC ---
+github_org           = "YOUR_GITHUB_ORG_OR_USER"
+github_repo          = "YOUR_REPO_NAME"
+github_deploy_branch = "main"
+
+# Repositories created after 2026-07-15 (or opted-in) need immutable subjects:
+# github_oidc_use_immutable_subjects = true
+# github_owner_id = "12345678"
+# github_repo_id  = "87654321"
+#
+# Find IDs:
+#   gh api user --jq .id
+#   gh api repos/ORG/REPO --jq .id
+
+# If a GitHub OIDC provider already exists in the account:
+# create_github_oidc_provider = false
+# github_oidc_provider_arn    = "arn:aws:iam::ACCOUNT_ID:oidc-provider/token.actions.githubusercontent.com"
+
+enable_cloudwatch_observability = true
+
+# Optional: tighten EKS public API access
+# cluster_endpoint_public_access_cidrs = ["203.0.113.10/32"]

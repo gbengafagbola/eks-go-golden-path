@@ -1,0 +1,12 @@
+apiVersion: v2
+name: platform-demo
+description: Secure, observable Go microservice golden path for Amazon EKS
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - go
+  - eks
+  - golden-path
+maintainers:
+  - name: platform-engineering
